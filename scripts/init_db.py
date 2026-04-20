@@ -1,25 +1,13 @@
-from __future__ import annotations
-
-import sys
 from pathlib import Path
+import sys
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-BACKEND_ROOT = REPO_ROOT / "backend"
-if str(BACKEND_ROOT) not in sys.path:
-    sys.path.insert(0, str(BACKEND_ROOT))
-
-from app.core.config import get_settings
-from app.core.database import Database
-
-
-def main() -> None:
-    settings = get_settings()
-    database = Database(settings=settings)
-    database.initialize()
-    print(f"Initialized database at: {settings.database_path}")
+from app.legacy.db import Database
 
 
 if __name__ == "__main__":
-    main()
-
+    database = Database()
+    database.init()
+    print(f"Initialized database at {database.db_path}")

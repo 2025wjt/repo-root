@@ -71,6 +71,7 @@ class ArtifactRecord(BaseModel):
     version: int
     generated_by: str
     status: str
+    content_type: str
     created_at: str
 
 

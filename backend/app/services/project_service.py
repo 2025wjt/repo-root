@@ -83,8 +83,8 @@ class ProjectService:
             """
             INSERT INTO artifacts (
                 artifact_id, project_id, task_id, artifact_type, artifact_name, uri,
-                version, generated_by, status, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                version, generated_by, status, content_type, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 generate_id("artifact"),
@@ -96,6 +96,7 @@ class ProjectService:
                 1,
                 AgentName.ORCHESTRATOR.value,
                 ArtifactStatus.ACTIVE.value,
+                "markdown",
                 timestamp,
             ),
         )

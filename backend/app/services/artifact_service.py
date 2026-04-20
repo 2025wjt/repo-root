@@ -28,7 +28,7 @@ class ArtifactService:
             artifact_type=artifact["artifact_type"],
             artifact_name=artifact["artifact_name"],
             uri=artifact["uri"],
-            content_type="markdown" if artifact["artifact_name"].endswith(".md") else "json",
+            content_type=artifact["content_type"],
             content=read_text_file(
                 resolve_repo_path(artifact["uri"], self.settings.projects_dir.parent)
             ),

@@ -83,6 +83,7 @@ SCHEMA_STATEMENTS = (
         version INTEGER NOT NULL,
         generated_by TEXT NOT NULL,
         status TEXT NOT NULL,
+        content_type TEXT NOT NULL DEFAULT 'markdown',
         created_at TEXT NOT NULL,
         FOREIGN KEY(project_id) REFERENCES projects(project_id)
     )
@@ -114,7 +115,29 @@ class Database:
         with self.connection() as conn:
             for statement in SCHEMA_STATEMENTS:
                 conn.execute(statement)
+            self._ensure_artifact_content_type_column(conn)
             conn.commit()
+
+    def _ensure_artifact_content_type_column(self, conn: sqlite3.Connection) -> None:
+        columns = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(artifacts)").fetchall()
+        }
+        if "content_type" not in columns:
+            conn.execute(
+                "ALTER TABLE artifacts ADD COLUMN content_type TEXT NOT NULL DEFAULT 'markdown'"
+            )
+        conn.execute(
+            """
+            UPDATE artifacts
+            SET content_type = CASE
+                WHEN artifact_name LIKE '%.json' THEN 'json'
+                WHEN artifact_name LIKE '%.zip' THEN 'zip'
+                ELSE 'markdown'
+            END
+            WHERE content_type IS NULL OR content_type = ''
+            """
+        )
 
     @contextmanager
     def connection(self):
